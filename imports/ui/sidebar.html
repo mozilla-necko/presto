@@ -1,0 +1,12 @@
+<template name="sidebar">
+  <div>CDP bugs</div>
+  <ul id="cdp-bugs" class="nav nav-sidebar">
+    {{#each labels}}
+      {{>list_label}}
+    {{/each}}
+  </ul>
+</template>
+
+<template name="list_label">
+  <li><a href="#" onclick="displayLabel('{{id}}');">{{text}}</a></li>
+</template>

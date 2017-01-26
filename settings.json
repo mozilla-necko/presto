@@ -1,0 +1,10 @@
+{
+  "public": {
+    "endpoint": "https://www.webpagetest.org",
+    "runs": 30,
+    "labels": [
+      { "id": "<label_id>", "text": "<display text>"}
+    ],
+    "build_archive": "https://archive.mozilla.org/pub/firefox/try-builds/"
+  }
+}

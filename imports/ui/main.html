@@ -1,0 +1,121 @@
+<template name="main">
+  <h1 class="page-header">WebPageTest Result</h1>
+
+  <h2 class="sub-header">Settings</h2>
+
+  <div class="row placeholders">
+    <form class="form-inline">
+      <select id="column" onchange="changeColumn();">
+        <option value="SpeedIndex" selected="selected">Speed Index</option>
+        <option value="loadTime">Load Time (ms)</option>
+        <option value="TTFB">Time to First Byte (ms)</option>
+        <option value="bytesOut">Bytes Out</option>
+        <option value="bytesIn">Bytes In</option>
+        <!-- <option value="DNS Lookups">DNS Lookups</option> -->
+        <option value="connections">Connections</option>
+        <option value="requests">Requests</option>
+        <option value="responses_200">OK Responses</option>
+        <!-- <option value="Redirects">Redirects</option> -->
+        <!-- <option value="Not Modified">Not Modified</option> -->
+        <option value="responses_404">Not Found</option>
+        <option value="responses_other">Other Responses</option>
+        <option value="render">Time to Start Render (ms)</option>
+        <!-- <option value="Segments Transmitted">Segments Transmitted</option> -->
+        <!-- <option value="Segments Retransmitted">Segments Retransmitted</option> -->
+        <!-- <option value="Packet Loss (out)">Packet Loss (out)</option> -->
+        <!-- <option value="Activity Time(ms)">Activity Time(ms)</option> -->
+        <option value="docTime">Doc Complete Time (ms)</option>
+        <!-- <option value="Event GUID">Event GUID</option> -->
+        <!-- <option value="Time to DOM Element (ms)">Time to DOM Element (ms)</option> -->
+        <!-- <option value="Includes Object Data">Includes Object Data</option> -->
+        <option value="score_cache">Cache Score</option>
+        <option value="score_cdn">Static CDN Score</option>
+        <!-- <option value="One CDN Score">One CDN Score</option> -->
+        <option value="score_gzip">GZIP Score</option>
+        <option value="score_cookies">Cookie Score</option>
+        <option value="score_keep-alive">Keep-Alive Score</option>
+        <!-- <option value="DOCTYPE Score">DOCTYPE Score</option> -->
+        <option value="score_minify">Minify Score</option>
+        <option value="score_combine">Combine Score</option>
+        <option value="bytesOutDoc">Bytes Out (Doc)</option>
+        <option value="bytesInDoc">Bytes In (Doc)</option>
+        <!-- <option value="DNS Lookups (Doc)">DNS Lookups (Doc)</option> -->
+        <!-- <option value="Connections (Doc)">Connections (Doc)</option> -->
+        <option value="requestsDoc">Requests (Doc)</option>
+        <!-- <option value="OK Responses (Doc)">OK Responses (Doc)</option> -->
+        <!-- <option value="Redirects (Doc)">Redirects (Doc)</option> -->
+        <!-- <option value="Not Modified (Doc)">Not Modified (Doc)</option> -->
+        <!-- <option value="Not Found (Doc)">Not Found (Doc)</option> -->
+        <!-- <option value="Other Responses (Doc)">Other Responses (Doc)</option> -->
+        <option value="score_compress">Compression Score</option>
+        <option value="score_etags">ETag Score</option>
+        <!-- <option value="Flagged Requests">Flagged Requests</option> -->
+        <!-- <option value="Flagged Connections">Flagged Connections</option> -->
+        <!-- <option value="Max Simultaneous Flagged Connections">Max Simultaneous Flagged Connections</option> -->
+        <!-- <option value="Time to Base Page Complete (ms)">Time to Base Page Complete (ms)</option> -->
+        <!-- <option value="Base Page Result">Base Page Result</option> -->
+        <option value="gzip_total">Gzip Total Bytes</option>
+        <option value="gzip_savings">Gzip Savings</option>
+        <option value="minify_total">Minify Total Bytes</option>
+        <option value="minify_savings">Minify Savings</option>
+        <option value="image_total">Image Total Bytes</option>
+        <option value="image_savings">Image Savings</option>
+        <option value="base_page_redirects">Base Page Redirects</option>
+        <option value="aft">AFT (ms)</option>
+        <option value="domElements">DOM Elements</option>
+        <option value="pageSpeedVersion">PageSpeed Version</option>
+        <option value="titleTime">Time to Title</option>
+        <option value="loadEventStart">Load Event Start</option>
+        <option value="loadEventEnd">Load Event End</option>
+        <option value="domContentLoadedEventStart">DOM Content Ready Start</option>
+        <option value="domContentLoadedEventEnd">DOM Content Ready End</option>
+        <option value="visualComplete">Visually Complete (ms)</option>
+        <option value="server_count">Base Page Server Count</option>
+        <option value="server_rtt">Base Page Server RTT</option>
+      </select>
+
+      <select id="compare" onchange="compareLabel(this);">
+        <option value="" selected="selected">Choose label to compare</option>
+        {{#each labels}}
+          {{>select_label}}
+        {{/each}}
+      </select>
+    </form>
+  </div>
+
+  <h2 class="sub-header">Statistics</h2>
+  <!-- Nav tabs -->
+  <ul id="nav_tabs" class="nav nav-tabs" role="tablist">
+    {{#each panes}}
+      {{>stat_tab}}
+    {{/each}}
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    {{#each panes}}
+      {{>stat_panes}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="select_label">
+  <option value="{{id}}">{{text}}</option>
+</template>
+
+<template name="stat_tab">
+  <li role="presentation"><a href="#{{pane}}_panel" aria-controls="{{pane}}_panel" role="tab" data-toggle="tab">{{text}}</a></li>
+</template>
+
+<template name="stat_panes">
+  <div role="tabpanel" class="tab-pane active" id="{{pane}}_panel">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead id="{{pane}}_head">
+        </thead>
+        <tbody id="{{pane}}_body">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
