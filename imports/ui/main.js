@@ -130,17 +130,20 @@ function refreshData() {
 
   clearTables();
 
+  let urls = url ? [url] : listDomains();
+  // console.log('URLs: ' + JSON.stringify(urls));
+
   let labelNames = labels.map(getNameByLabel);
   if (labels.length == 1) {
     let name = labelNames[0];
 
-    setHeader($('#avg_1st_head'), ['URL', name]);
-    setHeader($('#avg_2nd_head'), ['URL', name]);
-    setHeader($('#med_1st_head'), ['URL', name]);
-    setHeader($('#med_2nd_head'), ['URL', name]);
+    setHeader($('#avg_1st_head'), ['#', 'URL', name]);
+    setHeader($('#avg_2nd_head'), ['#', 'URL', name]);
+    setHeader($('#med_1st_head'), ['#', 'URL', name]);
+    setHeader($('#med_2nd_head'), ['#', 'URL', name]);
 
   } else if (labels.length == 2) {
-    let names = ['URL'].concat(labelNames).concat(['Difference', '+']);
+    let names = ['#', 'URL'].concat(labelNames).concat(['Difference', '+']);
 
     setHeader($('#avg_1st_head'), names);
     setHeader($('#avg_2nd_head'), names);
@@ -148,23 +151,21 @@ function refreshData() {
     setHeader($('#med_2nd_head'), names);
   }
 
-  let urls = url ? [url] : listDomains();
-  // console.log('URLs: ' + JSON.stringify(urls));
-
-  for (u of urls) {
+  let i = 0;
+  for (let u of urls) {
     let promises = labels.map(label => {
       return fetchData(label, u);
     });
 
     Promise.all(promises).then(results => {
-      displayData(labels, results);
+      displayData(++i, labels, results);
     }, reason => {
       console.log('error: ' + reason);
     });
   }
 }
 
-function displayData(labels, results) {
+function displayData(index, labels, results) {
   console.assert(labels.length == results.length);
 
   let column = $('#column').val();
@@ -177,15 +178,16 @@ function displayData(labels, results) {
   if (labelNames.length == 1) {
     let data = results[0];
 
-    appendRow($('#avg_1st_body'), [data.url, createLink(data.summary, data.average.firstView[column], data.id)]);
-    appendRow($('#avg_2nd_body'), [data.url, createLink(data.summary, data.average.repeatView[column], data.id)]);
-    appendRow($('#med_1st_body'), [data.url, createLink(data.summary, data.median.firstView[column], data.id)]);
-    appendRow($('#med_2nd_body'), [data.url, createLink(data.summary, data.median.repeatView[column], data.id)]);
+    appendRow($('#avg_1st_body'), [index, data.url, createLink(data.summary, data.average.firstView[column], data.id)]);
+    appendRow($('#avg_2nd_body'), [index, data.url, createLink(data.summary, data.average.repeatView[column], data.id)]);
+    appendRow($('#med_1st_body'), [index, data.url, createLink(data.summary, data.median.firstView[column], data.id)]);
+    appendRow($('#med_2nd_body'), [index, data.url, createLink(data.summary, data.median.repeatView[column], data.id)]);
 
   } else if (labelNames.length == 2) {
     let data = results;
 
     appendRow($('#avg_1st_body'), [
+      index,
       data[0].url,
       createLink(data[0].summary, data[0].average.firstView[column], data[0].id),
       createLink(data[1].summary, data[1].average.firstView[column], data[1].id),
@@ -194,6 +196,7 @@ function displayData(labels, results) {
     ]);
 
     appendRow($('#avg_2nd_body'), [
+      index,
       data[0].url,
       createLink(data[0].summary, data[0].average.repeatView[column], data[0].id),
       createLink(data[1].summary, data[1].average.repeatView[column], data[1].id),
@@ -202,6 +205,7 @@ function displayData(labels, results) {
     ]);
 
     appendRow($('#med_1st_body'), [
+      index,
       data[0].url,
       createLink(data[0].summary, data[0].median.firstView[column], data[0].id),
       createLink(data[1].summary, data[1].median.firstView[column], data[1].id),
@@ -210,6 +214,7 @@ function displayData(labels, results) {
     ]);
 
     appendRow($('#med_2nd_body'), [
+      index,
       data[0].url,
       createLink(data[0].summary, data[0].median.repeatView[column], data[0].id),
       createLink(data[1].summary, data[1].median.repeatView[column], data[1].id),

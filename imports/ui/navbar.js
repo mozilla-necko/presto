@@ -13,6 +13,10 @@ Template.navbar.helpers({
 
     // console.log('URLs: ' + JSON.stringify(urls));
     return urls;
+  },
+
+  numDomains() {
+    return listDomains().length;
   }
 });
 

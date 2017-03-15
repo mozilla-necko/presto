@@ -14,7 +14,7 @@
         <ul id="domains" class="dropdown-menu scrollable-menu" aria-labelledby="drop-domains">
           <li><a href="#" onclick="displayDomain();">All</a></li>
           <li role="separator" class="divider"></li>
-          <li class="dropdown-header">Available Domains</li>
+          <li class="dropdown-header">Available Domains ({{numDomains}})</li>
           {{#each domains}}
             {{>domain}}
           {{/each}}
