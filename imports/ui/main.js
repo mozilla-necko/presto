@@ -104,12 +104,36 @@ function getNameByLabel(label) {
 }
 
 function createLink(url, text, title) {
+  if (!text) {
+    text = url;
+  }
+  if (!title) {
+    title = text;
+  }
+
   let a = document.createElement('a');
   a.setAttribute('href', url);
   a.setAttribute('target', '_blank');
   a.setAttribute('title', title ? title : url);
   a.appendChild(document.createTextNode(text));
   return a;
+}
+
+function createCompareSymbol(value) {
+  let arrow = document.createElement('span');
+
+  if (value > 0) {
+    arrow.setAttribute('class', 'glyphicon glyphicon-triangle-top');
+    arrow.setAttribute('style', 'color:red;');
+  } else if (value < 0) {
+    arrow.setAttribute('class', 'glyphicon glyphicon-triangle-bottom');
+    arrow.setAttribute('style', 'color:green;');
+  } else {
+    arrow.setAttribute('class', 'glyphicon glyphicon-triangle-right');
+    arrow.setAttribute('style', 'color:black;');
+  }
+
+  return arrow
 }
 
 function refreshData() {
@@ -134,22 +158,30 @@ function refreshData() {
   // console.log('URLs: ' + JSON.stringify(urls));
 
   let labelNames = labels.map(getNameByLabel);
-  if (labels.length == 1) {
-    let name = labelNames[0];
 
-    setHeader($('#avg_1st_head'), ['#', 'URL', name]);
-    setHeader($('#avg_2nd_head'), ['#', 'URL', name]);
-    setHeader($('#med_1st_head'), ['#', 'URL', name]);
-    setHeader($('#med_2nd_head'), ['#', 'URL', name]);
+  let firstViewAverageHeader = ['#', 'URL'];
+  let secondViewAverageHeader = ['#', 'URL'];
+  let firstViewMedianHeader = ['#', 'URL'];
+  let secondViewMedianHeader = ['#', 'URL'];
 
-  } else if (labels.length == 2) {
-    let names = ['#', 'URL'].concat(labelNames).concat(['Difference', '+']);
+  for (let i in labelNames) {
+    firstViewAverageHeader.push(labelNames[i]);
+    secondViewAverageHeader.push(labelNames[i]);
+    firstViewMedianHeader.push(labelNames[i]);
+    secondViewMedianHeader.push(labelNames[i]);
 
-    setHeader($('#avg_1st_head'), names);
-    setHeader($('#avg_2nd_head'), names);
-    setHeader($('#med_1st_head'), names);
-    setHeader($('#med_2nd_head'), names);
+    if (i > 0) {
+      firstViewAverageHeader.push('Diff', '+');
+      secondViewAverageHeader.push('Diff', '+');
+      firstViewMedianHeader.push('Diff', '+');
+      secondViewMedianHeader.push('Diff', '+');
+    }
   }
+
+  setHeader($('#avg_1st_head'), firstViewAverageHeader);
+  setHeader($('#avg_2nd_head'), secondViewAverageHeader);
+  setHeader($('#med_1st_head'), firstViewMedianHeader);
+  setHeader($('#med_2nd_head'), secondViewMedianHeader);
 
   let i = 0;
   for (let u of urls) {
@@ -158,70 +190,83 @@ function refreshData() {
     });
 
     Promise.all(promises).then(results => {
-      displayData(++i, labels, results);
+      displayData(++i, u, results);
     }, reason => {
       console.log('error: ' + reason);
     });
   }
 }
 
-function displayData(index, labels, results) {
-  console.assert(labels.length == results.length);
+function displayData(index, url, results) {
+  console.assert(results.length > 0);
+  console.assert(results[0].data);
+  console.assert(results[0].data.length > 0);
 
   let column = $('#column').val();
   // console.log('column = ' + column);
-  // console.log(labels);
   // console.log(results);
 
-  let labelNames = labels.map(getNameByLabel);
+  let values = results.map(result => {
+    let { data, id } = result;
+    // console.log(result);
+    let resultURL = Meteor.settings.public.endpoint + '/results.php?test=' + id;
 
-  if (labelNames.length == 1) {
-    let data = results[0];
+    let firstViewValues = data.filter((r) => {
+      return r['Cached'] == '0';
+    }).map((r) => {
+      return parseInt(r[column]);
+    });
+    let repeatViewValues = data.filter((r) => {
+      return r['Cached'] == '1';
+    }).map((r) => {
+      return parseInt(r[column]);
+    });
 
-    appendRow($('#avg_1st_body'), [index, data.url, createLink(data.summary, data.average.firstView[column], data.id)]);
-    appendRow($('#avg_2nd_body'), [index, data.url, createLink(data.summary, data.average.repeatView[column], data.id)]);
-    appendRow($('#med_1st_body'), [index, data.url, createLink(data.summary, data.median.firstView[column], data.id)]);
-    appendRow($('#med_2nd_body'), [index, data.url, createLink(data.summary, data.median.repeatView[column], data.id)]);
+    return {
+      id: id,
+      url: resultURL,
+      firstViewValues: firstViewValues,
+      firstViewAverage: avg(firstViewValues).toFixed(2),
+      firstViewMedian: med(firstViewValues),
+      repeatViewValues: repeatViewValues,
+      repeatViewAverage: avg(repeatViewValues).toFixed(2),
+      repeatViewMedian: med(repeatViewValues)
+    };
+  });
 
-  } else if (labelNames.length == 2) {
-    let data = results;
+  let firstViewAverageResults = [index, createLink(url)];
+  let secondViewAverageResults = [index, createLink(url)];
+  let firstViewMedianResults = [index, createLink(url)];
+  let secondViewMedianResults = [index, createLink(url)];
 
-    appendRow($('#avg_1st_body'), [
-      index,
-      data[0].url,
-      createLink(data[0].summary, data[0].average.firstView[column], data[0].id),
-      createLink(data[1].summary, data[1].average.firstView[column], data[1].id),
-      data[0].average.firstView[column] - data[1].average.firstView[column],
-      data[0].average.firstView[column] > data[1].average.firstView[column] ? '+' : ''
-    ]);
+  for (let i in values) {
+    firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].id));
+    secondViewAverageResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].id));
+    firstViewMedianResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].id));
+    secondViewMedianResults.push(createLink(values[i].url, values[i].repeatViewMedian, values[i].id));
 
-    appendRow($('#avg_2nd_body'), [
-      index,
-      data[0].url,
-      createLink(data[0].summary, data[0].average.repeatView[column], data[0].id),
-      createLink(data[1].summary, data[1].average.repeatView[column], data[1].id),
-      data[0].average.repeatView[column] - data[1].average.repeatView[column],
-      data[0].average.repeatView[column] > data[1].average.repeatView[column] ? '+' : ''
-    ]);
+    if (i > 0) {
+      let firstViewAverageDiff = (values[i - 1].firstViewAverage - values[i].firstViewAverage).toFixed(2);
+      let firstViewMedianDiff = (values[i - 1].firstViewMedian - values[i].firstViewMedian).toFixed(2);
+      let repeatViewAverageDiff = (values[i - 1].repeatViewAverage - values[i].repeatViewAverage).toFixed(2);
+      let repeatViewMedianDiff = (values[i - 1].repeatViewMedian - values[i].repeatViewMedian).toFixed(2);
 
-    appendRow($('#med_1st_body'), [
-      index,
-      data[0].url,
-      createLink(data[0].summary, data[0].median.firstView[column], data[0].id),
-      createLink(data[1].summary, data[1].median.firstView[column], data[1].id),
-      data[0].median.firstView[column] - data[1].median.firstView[column],
-      data[0].median.firstView[column] > data[1].median.firstView[column] ? '+' : ''
-    ]);
+      firstViewAverageResults.push(firstViewAverageDiff);
+      secondViewAverageResults.push(firstViewMedianDiff);
+      firstViewMedianResults.push(repeatViewAverageDiff);
+      secondViewMedianResults.push(repeatViewMedianDiff);
 
-    appendRow($('#med_2nd_body'), [
-      index,
-      data[0].url,
-      createLink(data[0].summary, data[0].median.repeatView[column], data[0].id),
-      createLink(data[1].summary, data[1].median.repeatView[column], data[1].id),
-      data[0].median.repeatView[column] - data[1].median.repeatView[column],
-      data[0].median.repeatView[column] > data[1].median.repeatView[column] ? '+' : ''
-    ]);
+      firstViewAverageResults.push(createCompareSymbol(firstViewAverageDiff));
+      secondViewAverageResults.push(createCompareSymbol(firstViewMedianDiff));
+      firstViewMedianResults.push(createCompareSymbol(repeatViewAverageDiff));
+      secondViewMedianResults.push(createCompareSymbol(repeatViewMedianDiff));
+    }
   }
+
+  appendRow($('#avg_1st_body'), firstViewAverageResults);
+  appendRow($('#avg_2nd_body'), secondViewAverageResults);
+  appendRow($('#med_1st_body'), firstViewMedianResults);
+  appendRow($('#med_2nd_body'), secondViewMedianResults);
 }
 
 displayDomain = function(url) {
