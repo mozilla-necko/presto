@@ -57,7 +57,11 @@ Router.route('/api/addDomain', {
     });
 
     let id = this.params.query.id;
-    collectResult(id);
+
+    task = Tasks.findOne({ id: id});
+    if (!task) {
+      collectResult(id);
+    }
     this.response.end(id);
   }
 });
