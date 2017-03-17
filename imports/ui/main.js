@@ -53,27 +53,27 @@ function fetchData(label, url) {
 function setHeader(thead, names) {
   thead.empty();
 
-  let tr = document.createElement('tr');
+  let tr = $('<tr/>');
   for (let i = 0; i < names.length; i++) {
-    let th = document.createElement('th');
-    th.textContent = names[i];
-    tr.appendChild(th);
+    let th = $('<th/>');
+    th.text(names[i]);
+    tr.append(th);
   }
 
   thead.append(tr);
 }
 
 function appendRow(body, values) {
-  let tr = document.createElement('tr');
+  let tr = $('<tr/>');
 
   for (let i = 0; i < values.length; i++) {
-    let td = document.createElement('td');
+    let td = $('<td/>');
     if (typeof(values[i]) == "object") {
-      td.appendChild(values[i]);
+      td.append(values[i]);
     } else {
-      td.textContent = values[i];
+      td.text(values[i]);
     }
-    tr.appendChild(td);
+    tr.append(td);
   }
 
   body.append(tr);
@@ -111,26 +111,26 @@ function createLink(url, text, title) {
     title = text;
   }
 
-  let a = document.createElement('a');
-  a.setAttribute('href', url);
-  a.setAttribute('target', '_blank');
-  a.setAttribute('title', title ? title : url);
-  a.appendChild(document.createTextNode(text));
+  let a = $('<a/>');
+  a.attr('href', url);
+  a.attr('target', '_blank');
+  a.attr('title', title);
+  a.append(document.createTextNode(text));
   return a;
 }
 
 function createCompareSymbol(value) {
-  let arrow = document.createElement('span');
+  let arrow = $('<span/>');
 
   if (value > 0) {
-    arrow.setAttribute('class', 'glyphicon glyphicon-triangle-top');
-    arrow.setAttribute('style', 'color:red;');
+    arrow.addClass('glyphicon glyphicon-triangle-top');
+    arrow.css('color', 'red');
   } else if (value < 0) {
-    arrow.setAttribute('class', 'glyphicon glyphicon-triangle-bottom');
-    arrow.setAttribute('style', 'color:green;');
+    arrow.addClass('glyphicon glyphicon-triangle-bottom');
+    arrow.css('color', 'green');
   } else {
-    arrow.setAttribute('class', 'glyphicon glyphicon-triangle-right');
-    arrow.setAttribute('style', 'color:black;');
+    arrow.addClass('glyphicon glyphicon-triangle-right');
+    arrow.css('color', 'black');
   }
 
   return arrow
@@ -234,10 +234,11 @@ function displayData(index, url, results) {
     };
   });
 
-  let firstViewAverageResults = [index, createLink(url)];
-  let secondViewAverageResults = [index, createLink(url)];
-  let firstViewMedianResults = [index, createLink(url)];
-  let secondViewMedianResults = [index, createLink(url)];
+  let a = createLink(url);
+  let firstViewAverageResults = [index, a.clone()];
+  let secondViewAverageResults = [index, a.clone()];
+  let firstViewMedianResults = [index, a.clone()];
+  let secondViewMedianResults = [index, a.clone()];
 
   for (let i in values) {
     firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].id));
