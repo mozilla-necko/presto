@@ -33,8 +33,8 @@ Template.domain.onRendered(function() {
 
   $('#domains li a:first').click();
 
-  $('#myModal').on('shown.bs.modal', function () {
-    $('#myInput').focus()
+  $('#addBuildModal').on('shown.bs.modal', function () {
+    $('#build_email').focus()
   })
 });
 
