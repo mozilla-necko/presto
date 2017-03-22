@@ -10,7 +10,7 @@ function addBuild(id) {
     revision: id.substr(id.length - 40),
     owner: id.substr(0, id.length - 41),
     location: 'Necko:Try-' + id.replace('.', '_'),
-    created_at: new Date()
+    created_at: Math.floor(Date.now() / 1000)
   };
 
   Builds.insert(obj, (err, _id) => {
