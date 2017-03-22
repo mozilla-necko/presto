@@ -242,24 +242,24 @@ function displayData(index, url, results) {
 
   for (let i in values) {
     firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].id));
-    secondViewAverageResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].id));
-    firstViewMedianResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].id));
+    secondViewAverageResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].id));
+    firstViewMedianResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].id));
     secondViewMedianResults.push(createLink(values[i].url, values[i].repeatViewMedian, values[i].id));
 
     if (i > 0) {
       let firstViewAverageDiff = (values[i - 1].firstViewAverage - values[i].firstViewAverage).toFixed(2);
-      let firstViewMedianDiff = (values[i - 1].firstViewMedian - values[i].firstViewMedian).toFixed(2);
       let repeatViewAverageDiff = (values[i - 1].repeatViewAverage - values[i].repeatViewAverage).toFixed(2);
+      let firstViewMedianDiff = (values[i - 1].firstViewMedian - values[i].firstViewMedian).toFixed(2);
       let repeatViewMedianDiff = (values[i - 1].repeatViewMedian - values[i].repeatViewMedian).toFixed(2);
 
       firstViewAverageResults.push(firstViewAverageDiff);
-      secondViewAverageResults.push(firstViewMedianDiff);
-      firstViewMedianResults.push(repeatViewAverageDiff);
+      secondViewAverageResults.push(repeatViewAverageDiff);
+      firstViewMedianResults.push(firstViewMedianDiff);
       secondViewMedianResults.push(repeatViewMedianDiff);
 
       firstViewAverageResults.push(createCompareSymbol(firstViewAverageDiff));
-      secondViewAverageResults.push(createCompareSymbol(firstViewMedianDiff));
-      firstViewMedianResults.push(createCompareSymbol(repeatViewAverageDiff));
+      secondViewAverageResults.push(createCompareSymbol(repeatViewAverageDiff));
+      firstViewMedianResults.push(createCompareSymbol(firstViewMedianDiff));
       secondViewMedianResults.push(createCompareSymbol(repeatViewMedianDiff));
     }
   }
