@@ -202,7 +202,7 @@ function displayData(index, url, results) {
   console.assert(results[0].data);
   console.assert(results[0].data.length > 0);
 
-  let column = $('#column').val();
+  let column = gEnv.field;
   // console.log('column = ' + column);
   // console.log(results);
 
@@ -271,23 +271,32 @@ function displayData(index, url, results) {
 }
 
 displayDomain = function(url) {
+  if (gEnv.url == url) { return; }
+
   // console.log('displayDomain: ' + url);
   gEnv.url = url;
   refreshData();
 }
 
 displayLabel = function(label) {
+  if (gEnv.label == label) { return; }
+
   // console.log('displayLabel: ' + label);
   gEnv.label = label;
   refreshData();
 }
 
-changeColumn = function() {
+displayField = function(field) {
+  if (gEnv.field == field) { return; }
+
+  // console.log('displayField: ' + field);
+  gEnv.field = field;
   refreshData();
 }
 
 compareLabel = function(selectObj) {
   let label = selectObj.value;
+  if (gEnv.compare == label) { return; }
 
   // console.log('compareLabel: ' + label);
   gEnv.compare = label;

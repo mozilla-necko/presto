@@ -16,7 +16,14 @@
           <li role="separator" class="divider"></li>
           <li class="dropdown-header">Available Domains ({{numDomains}})</li>
           {{#each domains}}
-            {{>domain}}
+            <li><a href="#" onclick="displayDomain('{{url}}');">{{url}}</a></li>
+          {{/each}}
+        </ul>
+      </li>
+      <li class="dropdown"><a href=# class="dropdown-toggle" id="drop-fields" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Field <span class="caret"></span></a>
+        <ul id="fields" class="dropdown-menu scrollable-menu" aria-labelledby="drop-fields">
+          {{#each fields}}
+            <li><a href="#" onclick="displayField('{{value}}');">{{text}}</a></li>
           {{/each}}
         </ul>
       </li>
@@ -25,10 +32,6 @@
       <li>{{>addBuildButton}}</li>
     </ul>
   </div>
-</template>
-
-<template name="domain">
-  <li><a href="#" onclick="displayDomain('{{url}}');">{{url}}</a></li>
 </template>
 
 <template name="addBuildButton">
