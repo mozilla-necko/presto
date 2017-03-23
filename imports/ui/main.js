@@ -54,7 +54,7 @@ function setHeader(thead, names) {
   thead.empty();
 
   let tr = $('<tr/>');
-  for (let i = 0; i < names.length; i++) {
+  for (let i = 0; i < names.length; ++i) {
     let th = $('<th/>');
     th.text(names[i]);
     tr.append(th);
@@ -66,10 +66,10 @@ function setHeader(thead, names) {
 function appendRow(body, values) {
   let tr = $('<tr/>');
 
-  for (let i = 0; i < values.length; i++) {
+  for (let i = 0; i < values.length; ++i) {
     let td = $('<td/>');
     if (typeof(values[i]) == "object") {
-      td.append(values[i]);
+      td.append(values[i].clone());
     } else {
       td.text(values[i]);
     }
@@ -137,7 +137,6 @@ function createCompareSymbol(value) {
 }
 
 function refreshData() {
-  let url = gEnv.url;
   let labels = [];
 
   if (!gEnv.label) {
@@ -150,11 +149,11 @@ function refreshData() {
   }
 
   // console.log('refreshData() Labels: ' + labels);
-  // console.log('refreshData() URL: ' + url);
+  // console.log('refreshData() URL: ' + gEnv.url);
 
   clearTables();
 
-  let urls = url ? [url] : listDomains();
+  let urls = gEnv.url ? [gEnv.url] : listDomains();
   // console.log('URLs: ' + JSON.stringify(urls));
 
   let labelNames = labels.map(getNameByLabel);
@@ -183,14 +182,24 @@ function refreshData() {
   setHeader($('#med_1st_head'), firstViewMedianHeader);
   setHeader($('#med_2nd_head'), secondViewMedianHeader);
 
-  let i = 0;
-  for (let u of urls) {
+  for (let i = 0; i < urls.length; ++i) {
+    let url = urls[i];
     let promises = labels.map(label => {
-      return fetchData(label, u);
+      return fetchData(label, url);
     });
 
+    let defaultRowValues = [i + 1, createLink(url)];
+    let dataCount = (labels.length - 1) * 3 + 1;
+    for (let j = 0; j < dataCount; ++j) {
+      defaultRowValues.push('N/A');
+    }
+    appendRow($('#avg_1st_body'), defaultRowValues);
+    appendRow($('#avg_2nd_body'), defaultRowValues);
+    appendRow($('#med_1st_body'), defaultRowValues);
+    appendRow($('#med_2nd_body'), defaultRowValues);
+
     Promise.all(promises).then(results => {
-      displayData(++i, u, results);
+      displayData(i, url, results);
     }, reason => {
       console.log('error: ' + reason);
     });
@@ -234,13 +243,12 @@ function displayData(index, url, results) {
     };
   });
 
-  let a = createLink(url);
-  let firstViewAverageResults = [index, a.clone()];
-  let secondViewAverageResults = [index, a.clone()];
-  let firstViewMedianResults = [index, a.clone()];
-  let secondViewMedianResults = [index, a.clone()];
+  let firstViewAverageResults = [];
+  let secondViewAverageResults = [];
+  let firstViewMedianResults = [];
+  let secondViewMedianResults = [];
 
-  for (let i in values) {
+  for (let i = 0; i < values.length; ++i) {
     firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].id));
     secondViewAverageResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].id));
     firstViewMedianResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].id));
@@ -264,10 +272,25 @@ function displayData(index, url, results) {
     }
   }
 
-  appendRow($('#avg_1st_body'), firstViewAverageResults);
-  appendRow($('#avg_2nd_body'), secondViewAverageResults);
-  appendRow($('#med_1st_body'), firstViewMedianResults);
-  appendRow($('#med_2nd_body'), secondViewMedianResults);
+  for (let i = 0; i < firstViewAverageResults.length; ++i) {
+    let td = $('#avg_1st_body > tr:nth-child(' + (index + 1) + ') > td:nth-child(' + (i + 3) + ')');
+    td.html(firstViewAverageResults[i]);
+  }
+
+  for (let i = 0; i < secondViewAverageResults.length; ++i) {
+    let td = $('#avg_2nd_body > tr:nth-child(' + (index + 1) + ') > td:nth-child(' + (i + 3) + ')');
+    td.html(secondViewAverageResults[i]);
+  }
+
+  for (let i = 0; i < firstViewMedianResults.length; ++i) {
+    let td = $('#med_1st_body > tr:nth-child(' + (index + 1) + ') > td:nth-child(' + (i + 3) + ')');
+    td.html(firstViewMedianResults[i]);
+  }
+
+  for (let i = 0; i < secondViewMedianResults.length; ++i) {
+    let td = $('#med_2nd_body > tr:nth-child(' + (index + 1) + ') > td:nth-child(' + (i + 3) + ')');
+    td.html(secondViewMedianResults[i]);
+  }
 }
 
 displayDomain = function(url) {
