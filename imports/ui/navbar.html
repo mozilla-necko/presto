@@ -32,9 +32,9 @@
 </template>
 
 <template name="addBuildButton">
-  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addBuildModal">
+  <a href="#" data-toggle="modal" data-target="#addBuildModal">
     <span class="glyphicon glyphicon-plus-sign"></span> Try Build
-  </button>
+  </a>
 </template>
 
 <template name="addBuildModal">
@@ -60,7 +60,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button id="build_submit" type="button" class="btn btn-primary disabled">Save changes</button>
+          <button id="build_submit" type="button" class="btn btn-primary disabled" data-dismiss="modal">Save changes</button>
         </div>
       </div>
     </div>
