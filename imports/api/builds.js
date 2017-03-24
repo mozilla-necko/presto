@@ -25,26 +25,34 @@ function addBuild(id) {
 Router.route('/api/build/add', {
   where: 'server',
   action: function() {
-    this.response.writeHead(200, {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
-    });
-
     let id = decodeURIComponent(this.params.query.id);
     let url = Meteor.settings.public.build_archive + encodeURIComponent(id) + '/';
     console.log(url);
 
     let obj = Builds.findOne({id: id});
     if (obj) {
+      this.response.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        // 'Access-Control-Allow-Origin': '*'
+      });
+
       this.response.end(id + ' exists');
       return;
     }
 
     HTTP.get(url, {}, (err, resp) => {
       if (err || resp.statusCode != 200) {
+        this.response.writeHead(resp.statusCode, {
+          'Content-Type': 'text/html; charset=utf-8',
+        });
         this.response.end('invalid id: ' + id);
       } else {
         addBuild(id);
+
+        this.response.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          // 'Access-Control-Allow-Origin': '*'
+        });
         this.response.end('OK');
       }
     });
@@ -56,7 +64,7 @@ Router.route('/api/builds', {
   action: function() {
     this.response.writeHead(200, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
+      // 'Access-Control-Allow-Origin': '*'
     });
 
     let builds = Builds.find({}, { sort: { created_at: 1 } }).fetch();

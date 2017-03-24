@@ -53,7 +53,7 @@ Router.route('/api/addDomain', {
   action: function() {
     this.response.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
+      // 'Access-Control-Allow-Origin': '*'
     });
 
     let id = this.params.query.id;

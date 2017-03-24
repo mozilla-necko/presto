@@ -7,7 +7,7 @@ Router.route('/api/tasks', {
   action: function() {
     this.response.writeHead(200, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
+      // 'Access-Control-Allow-Origin': '*'
     });
 
     let tasks = Tasks.find({}, { sort: { created_at: 1 } }).fetch();
