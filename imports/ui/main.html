@@ -5,12 +5,16 @@
 
   <div class="row placeholders">
     <form class="form-inline">
-      <select id="compare" onchange="compareLabel(this);">
-        <option value="" selected="selected">Choose label to compare</option>
-        {{#each labels}}
-          {{>select_label}}
-        {{/each}}
-      </select>
+      <div class="form-group">
+        <label class="control-label">Compare</label>
+        <div>
+          <select class="form-control" id="compare" multiple>
+            {{#each labels}}
+              <option value="{{id}}">{{text}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -18,35 +22,23 @@
   <!-- Nav tabs -->
   <ul id="nav_tabs" class="nav nav-tabs" role="tablist">
     {{#each panes}}
-      {{>stat_tab}}
+      <li role="presentation"><a href="#{{pane}}_panel" aria-controls="{{pane}}_panel" role="tab" data-toggle="tab">{{text}}</a></li>
     {{/each}}
   </ul>
 
   <!-- Tab panes -->
   <div class="tab-content">
     {{#each panes}}
-      {{>stat_panes}}
+      <div role="tabpanel" class="tab-pane active" id="{{pane}}_panel">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead id="{{pane}}_head">
+            </thead>
+            <tbody id="{{pane}}_body">
+            </tbody>
+          </table>
+        </div>
+      </div>
     {{/each}}
-  </div>
-</template>
-
-<template name="select_label">
-  <option value="{{id}}">{{text}}</option>
-</template>
-
-<template name="stat_tab">
-  <li role="presentation"><a href="#{{pane}}_panel" aria-controls="{{pane}}_panel" role="tab" data-toggle="tab">{{text}}</a></li>
-</template>
-
-<template name="stat_panes">
-  <div role="tabpanel" class="tab-pane active" id="{{pane}}_panel">
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead id="{{pane}}_head">
-        </thead>
-        <tbody id="{{pane}}_body">
-        </tbody>
-      </table>
-    </div>
   </div>
 </template>

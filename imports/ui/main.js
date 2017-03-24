@@ -20,6 +20,8 @@ Template.main.helpers({
 
 Template.main.onRendered(function() {
   $('#nav_tabs li a:first').click();
+
+  $('#compare').change(compareLabel);
 });
 
 
@@ -145,7 +147,9 @@ function refreshData() {
   labels.push(gEnv.label);
 
   if (gEnv.compare) {
-    labels.push(gEnv.compare);
+    labels = labels.concat(gEnv.compare.filter((lb) => {
+      return lb !== gEnv.label;
+    }));
   }
 
   // console.log('refreshData() Labels: ' + labels);
@@ -267,10 +271,10 @@ function displayData(index, url, results) {
     secondViewMedianResults.push(createDisplayValue(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length));
 
     if (i > 0) {
-      let firstViewAverageDiff = (values[i - 1].firstViewAverage - values[i].firstViewAverage).toFixed(2);
-      let repeatViewAverageDiff = (values[i - 1].repeatViewAverage - values[i].repeatViewAverage).toFixed(2);
-      let firstViewMedianDiff = (values[i - 1].firstViewMedian - values[i].firstViewMedian).toFixed(2);
-      let repeatViewMedianDiff = (values[i - 1].repeatViewMedian - values[i].repeatViewMedian).toFixed(2);
+      let firstViewAverageDiff = (values[0].firstViewAverage - values[i].firstViewAverage).toFixed(2);
+      let repeatViewAverageDiff = (values[0].repeatViewAverage - values[i].repeatViewAverage).toFixed(2);
+      let firstViewMedianDiff = (values[0].firstViewMedian - values[i].firstViewMedian).toFixed(2);
+      let repeatViewMedianDiff = (values[0].repeatViewMedian - values[i].repeatViewMedian).toFixed(2);
 
       firstViewAverageResults.push(firstViewAverageDiff);
       secondViewAverageResults.push(repeatViewAverageDiff);
@@ -329,11 +333,11 @@ displayField = function(field) {
   refreshData();
 }
 
-compareLabel = function(selectObj) {
-  let label = selectObj.value;
+compareLabel = function() {
+  let label = $('#compare').val();
   if (gEnv.compare == label) { return; }
 
-  // console.log('compareLabel: ' + label);
+  console.log('compareLabel: ' + label);
   gEnv.compare = label;
   refreshData();
 }
