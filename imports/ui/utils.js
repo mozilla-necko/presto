@@ -2,7 +2,7 @@ import { Results } from '../api/results.js';
 import { Tasks } from '../api/tasks.js';
 
 sum = function(array) { return array.reduce((a, b) => { return a + b; }, 0); }
-avg = function(array) { return array.length ? sum(array) / array.length : 0; }
+avg = function(array) { return sum(array) / array.length; }
 med = function(array) {
   let m = array.sort((a, b) => { return a - b; });
   let mid = Math.floor((m.length - 1) / 2);

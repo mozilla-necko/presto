@@ -222,13 +222,17 @@ function displayData(index, url, results) {
 
     let firstViewValues = data.filter((r) => {
       return r['Cached'] == '0';
-    }).map((r) => {
+    }).map(r => {
       return parseInt(r[column]);
+    }).filter(n => {
+      return !isNaN(n);
     });
     let repeatViewValues = data.filter((r) => {
       return r['Cached'] == '1';
-    }).map((r) => {
+    }).map(r => {
       return parseInt(r[column]);
+    }).filter(n => {
+      return !isNaN(n);
     });
 
     return {
@@ -249,10 +253,10 @@ function displayData(index, url, results) {
   let secondViewMedianResults = [];
 
   for (let i = 0; i < values.length; ++i) {
-    firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].id));
-    secondViewAverageResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].id));
-    firstViewMedianResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].id));
-    secondViewMedianResults.push(createLink(values[i].url, values[i].repeatViewMedian, values[i].id));
+    firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].firstViewValues.length + ' valid samples'));
+    secondViewAverageResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].repeatViewValues.length + ' valid samples'));
+    firstViewMedianResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].firstViewValues.length + ' valid samples'));
+    secondViewMedianResults.push(createLink(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length + ' valid samples'));
 
     if (i > 0) {
       let firstViewAverageDiff = (values[i - 1].firstViewAverage - values[i].firstViewAverage).toFixed(2);
