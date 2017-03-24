@@ -24,3 +24,4 @@ iron:router
 http@1.2.12
 d3js:d3
 check@1.2.5
+fortawesome:fontawesome
