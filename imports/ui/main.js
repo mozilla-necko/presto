@@ -206,6 +206,14 @@ function refreshData() {
   }
 }
 
+function createDisplayValue(url, value, count) {
+  let link = createLink(url, value, count + ' valid samples');
+  if (count != Meteor.settings.public.runs) {
+    link.append($('<span class="glyphicon glyphicon-info-sign"/>'));
+  }
+  return link;
+}
+
 function displayData(index, url, results) {
   console.assert(results.length > 0);
   console.assert(results[0].data);
@@ -253,10 +261,10 @@ function displayData(index, url, results) {
   let secondViewMedianResults = [];
 
   for (let i = 0; i < values.length; ++i) {
-    firstViewAverageResults.push(createLink(values[i].url, values[i].firstViewAverage, values[i].firstViewValues.length + ' valid samples'));
-    secondViewAverageResults.push(createLink(values[i].url, values[i].repeatViewAverage, values[i].repeatViewValues.length + ' valid samples'));
-    firstViewMedianResults.push(createLink(values[i].url, values[i].firstViewMedian, values[i].firstViewValues.length + ' valid samples'));
-    secondViewMedianResults.push(createLink(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length + ' valid samples'));
+    firstViewAverageResults.push(createDisplayValue(values[i].url, values[i].firstViewAverage, values[i].firstViewValues.length));
+    secondViewAverageResults.push(createDisplayValue(values[i].url, values[i].repeatViewAverage, values[i].repeatViewValues.length));
+    firstViewMedianResults.push(createDisplayValue(values[i].url, values[i].firstViewMedian, values[i].firstViewValues.length));
+    secondViewMedianResults.push(createDisplayValue(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length));
 
     if (i > 0) {
       let firstViewAverageDiff = (values[i - 1].firstViewAverage - values[i].firstViewAverage).toFixed(2);
