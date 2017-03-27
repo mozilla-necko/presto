@@ -1,4 +1,3 @@
-import { Results } from './results.js';
 import { Tasks } from './tasks.js';
 
 function collectResult(id) {
@@ -18,19 +17,6 @@ function collectResult(id) {
 
 function parseResult(result) {
   console.log(result.id);
-
-  // Results.upsert({
-  //   id: result.id
-  // }, {
-  //   id: result.id,
-  //   data: JSON.stringify({
-  //     id: result.id,
-  //     url: result.url,
-  //     summary: result.summary,
-  //     average: result.average,
-  //     median: result.median
-  //   })
-  // });
 
   let browser_name = result.runs[1].firstView.browser_name;
   let browser_version = result.runs[1].firstView.browser_version;

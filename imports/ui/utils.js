@@ -1,4 +1,3 @@
-import { Results } from '../api/results.js';
 import { Tasks } from '../api/tasks.js';
 
 sum = function(array) { return array.reduce((a, b) => { return a + b; }, 0); }
