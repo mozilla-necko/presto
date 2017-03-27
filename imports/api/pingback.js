@@ -16,6 +16,11 @@ function collectResult(id) {
 }
 
 function parseResult(result) {
+  if (result.successfulFVRuns == 0 &&
+    (result.fvonly || result.successfulRVRuns == 0)) {
+    console.log(result.id + ' has skipped (no successful run)');
+    return;
+  }
   console.log(result.id);
 
   let browser_name = result.runs[1].firstView.browser_name;
