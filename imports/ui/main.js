@@ -219,9 +219,9 @@ function createDisplayValue(url, value, count) {
 }
 
 function displayData(index, url, results) {
-  console.assert(results.length > 0);
-  console.assert(results[0].data);
-  console.assert(results[0].data.length > 0);
+  console.assert(results.length > 0, '%d: %s', index+1, url);
+  console.assert(results[0].data, '%d: %s', index+1, url);
+  console.assert(results[0].data.length > 0, '%d: %s', index+1, url);
 
   let column = gEnv.field;
   // console.log('column = ' + column);
