@@ -121,6 +121,13 @@ function createLink(url, text, title) {
   return a;
 }
 
+function createCompareValue(percentage) {
+  if (isNaN(percentage)) {
+    return 'N/A';
+  }
+  return Math.abs(percentage) + '%';
+}
+
 function createCompareSymbol(value) {
   let arrow = $('<span/>');
 
@@ -130,7 +137,7 @@ function createCompareSymbol(value) {
   } else if (value < 0) {
     arrow.addClass('glyphicon glyphicon-triangle-bottom');
     arrow.css('color', 'green');
-  } else {
+  } else if (value == 0) {
     arrow.addClass('glyphicon glyphicon-triangle-right');
     arrow.css('color', 'black');
   }
@@ -174,10 +181,10 @@ function refreshData() {
     secondViewMedianHeader.push(labelNames[i]);
 
     if (i > 0) {
-      firstViewAverageHeader.push('Diff', '+');
-      secondViewAverageHeader.push('Diff', '+');
-      firstViewMedianHeader.push('Diff', '+');
-      secondViewMedianHeader.push('Diff', '+');
+      firstViewAverageHeader.push('Diff');
+      secondViewAverageHeader.push('Diff');
+      firstViewMedianHeader.push('Diff');
+      secondViewMedianHeader.push('Diff');
     }
   }
 
@@ -193,7 +200,7 @@ function refreshData() {
     });
 
     let defaultRowValues = [i + 1, createLink(url)];
-    let dataCount = (labels.length - 1) * 3 + 1;
+    let dataCount = (labels.length - 1) * 2 + 1;
     for (let j = 0; j < dataCount; ++j) {
       defaultRowValues.push('N/A');
     }
@@ -276,15 +283,14 @@ function displayData(index, url, results) {
       let firstViewMedianDiff = (values[0].firstViewMedian - values[i].firstViewMedian).toFixed(2);
       let repeatViewMedianDiff = (values[0].repeatViewMedian - values[i].repeatViewMedian).toFixed(2);
 
-      firstViewAverageResults.push(firstViewAverageDiff);
-      secondViewAverageResults.push(repeatViewAverageDiff);
-      firstViewMedianResults.push(firstViewMedianDiff);
-      secondViewMedianResults.push(repeatViewMedianDiff);
-
-      firstViewAverageResults.push(createCompareSymbol(firstViewAverageDiff));
-      secondViewAverageResults.push(createCompareSymbol(repeatViewAverageDiff));
-      firstViewMedianResults.push(createCompareSymbol(firstViewMedianDiff));
-      secondViewMedianResults.push(createCompareSymbol(repeatViewMedianDiff));
+      firstViewAverageResults.push(createCompareSymbol(firstViewAverageDiff)
+        .append(createCompareValue(Math.round(firstViewAverageDiff * 100 / values[0].firstViewAverage))));
+      secondViewAverageResults.push(createCompareSymbol(repeatViewAverageDiff)
+        .append(createCompareValue(Math.round(repeatViewAverageDiff * 100 / values[0].repeatViewAverage))));
+      firstViewMedianResults.push(createCompareSymbol(firstViewMedianDiff)
+        .append(createCompareValue(Math.round(firstViewMedianDiff * 100 / values[0].firstViewMedian))));
+      secondViewMedianResults.push(createCompareSymbol(repeatViewMedianDiff)
+        .append(createCompareValue(Math.round(repeatViewMedianDiff * 100 / values[0].repeatViewMedian))));
     }
   }
 
