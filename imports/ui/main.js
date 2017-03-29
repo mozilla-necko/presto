@@ -252,10 +252,10 @@ function displayData(index, url, results) {
       url: resultURL,
       firstViewValues: firstViewValues,
       firstViewAverage: avg(firstViewValues).toFixed(2),
-      firstViewMedian: med(firstViewValues),
+      firstViewMedian: med(firstViewValues).toFixed(1),
       repeatViewValues: repeatViewValues,
       repeatViewAverage: avg(repeatViewValues).toFixed(2),
-      repeatViewMedian: med(repeatViewValues)
+      repeatViewMedian: med(repeatViewValues).toFixed(1)
     };
   });
 
