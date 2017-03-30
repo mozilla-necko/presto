@@ -2,11 +2,12 @@ import { Mongo } from 'meteor/mongo';
 
 export const Builds = new Mongo.Collection('builds');
 
-function addBuild(id) {
+function addBuild(id, text) {
   console.log(id);
 
   let obj = {
     id: id,
+    desc: text,
     revision: id.substr(id.length - 40),
     owner: id.substr(0, id.length - 41),
     location: 'Necko:Try-' + id.replace('.', '_'),
@@ -26,6 +27,7 @@ Router.route('/api/build/add', {
   where: 'server',
   action: function() {
     let id = decodeURIComponent(this.params.query.id);
+    let text = decodeURIComponent(this.params.query.text);
     let url = Meteor.settings.public.build_archive + encodeURIComponent(id) + '/';
     console.log(url);
 
@@ -47,7 +49,7 @@ Router.route('/api/build/add', {
         });
         this.response.end('invalid id: ' + id);
       } else {
-        addBuild(id);
+        addBuild(id, text);
 
         this.response.writeHead(200, {
           'Content-Type': 'text/html; charset=utf-8',
