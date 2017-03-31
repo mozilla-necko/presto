@@ -3,6 +3,10 @@ import { Template } from 'meteor/templating';
 
 import './main.html';
 
+let gEnv = {
+  cache: {}
+};
+
 Template.main.helpers({
   labels() {
     return Meteor.settings.public.labels;
@@ -21,13 +25,15 @@ Template.main.helpers({
 Template.main.onRendered(function() {
   $('#nav_tabs li a:first').click();
 
+  let url = $('#domains li a:first').text();
+  let field = $('#fields li a:first').text();
+
+  $('#currentDomain').text(url);
+  $('#currentField').text(field);
+
   $('#compare').change(compareLabel);
 });
 
-
-let gEnv = {
-  cache: {}
-};
 
 //*******************
 //* Data Operations *
@@ -320,6 +326,9 @@ displayDomain = function(url) {
 
   // console.log('displayDomain: ' + url);
   gEnv.url = url;
+
+  $('#currentDomain').text(url);
+
   refreshData();
 }
 
@@ -336,6 +345,9 @@ displayField = function(field) {
 
   // console.log('displayField: ' + field);
   gEnv.field = field;
+
+  $('#currentField').text(field);
+
   refreshData();
 }
 
