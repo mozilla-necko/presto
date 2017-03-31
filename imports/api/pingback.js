@@ -42,7 +42,7 @@ Router.route('/api/addDomain', {
       // 'Access-Control-Allow-Origin': '*'
     });
 
-    let id = this.params.query.id;
+    let id = decodeURIComponent(this.params.query.id);
 
     task = Tasks.findOne({ id: id});
     if (task) {

@@ -43,12 +43,38 @@
         <div class="modal-body">
           <form>
             <div class="form-group">
+              <div class="input-group">
+                <input id="add-task-email" type="text" class="form-control" placeholder="user" aria-describedby="sizing-addon2">
+                <span class="input-group-addon">@mozilla.com</span>
+              </div>
+
+              <label class="control-label">Domains</label><h6 id="add-task-domains-count"></h6>
+              <select class="form-control" id="add-task-domains" multiple>
+                {{#each domains}}
+                  <option value="{{url}}">{{url}}</option>
+                {{/each}}
+              </select>
+
+              <label class="control-label">Labels</label><h6 id="add-task-labels-count"></h6>
+              <select class="form-control" id="add-task-labels" multiple>
+                {{#each labels}}
+                  <option value="{{id}}">{{text}}</option>
+                {{/each}}
+              </select>
+
+              <label class="control-label">Location</label>
+              <select class="form-control" id="add-task-location">
+                {{#each locations}}
+                  <option value="{{name}}">{{text}}</option>
+                {{/each}}
+              </select>
             </div>
           </form>
         </div>
         <div class="modal-footer">
+          <div id="addTaskAlert"></div>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button id="task_submit" type="button" class="btn btn-primary disabled">Add</button>
+          <button id="task_submit" type="button" class="btn btn-primary">Add</button>
         </div>
       </div>
     </div>

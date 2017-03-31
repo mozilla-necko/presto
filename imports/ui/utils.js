@@ -1,3 +1,4 @@
+import { Builds, Locations } from '../api/builds.js';
 import { Tasks } from '../api/tasks.js';
 
 sum = function(array) { return array.reduce((a, b) => { return a + b; }, 0); }
@@ -6,6 +7,12 @@ med = function(array) {
   let m = array.sort((a, b) => { return a - b; });
   let mid = Math.floor((m.length - 1) / 2);
   return m.length % 2 ? m[mid] : (m[mid] + m[mid + 1]) / 2.0;
+}
+
+unique = function(array) {
+  return array.filter((value, index, self) => {
+    return self.indexOf(value) == index;
+  });
 }
 
 makeXHRRequest = function(url) {
@@ -43,9 +50,51 @@ listDomains = function() {
     return obj.url;
   });
 
-  return urls.filter((value, index, self) => {
-    return self.indexOf(value) == index;
+  return unique(urls);
+}
+
+hasLabel = function(label) {
+  return Builds.findOne({ revision: label });
+}
+
+listBuildLabels = function(param) {
+  let labels = Builds.find({}, {
+    sort: { desc: 1 }, fields: { desc: true, revision: true }
+  }).map(obj => {
+    return {
+      id: obj.revision,
+      text: obj.desc
+    }
   });
+
+  labels = unique(labels);
+
+  if (!param || !param.databaseOnly) {
+    labels = labels.concat(Meteor.settings.public.labels);
+  }
+
+  if (!param || !param.dontFilter) {
+    return labels.filter(obj => {
+      return Tasks.findOne({ label: obj.id });
+    });
+  }
+
+  return labels;
+}
+
+hasLocation = function(location) {
+  return Locations.findOne({ name: location });
+}
+
+listLocations = function() {
+  let locations = Locations.find({}, { sort: { name: 1 } }).map(obj => {
+    return {
+      name: obj.name,
+      text: obj.text
+    };
+  });
+
+  return locations;
 }
 
 let resultCache = {};

@@ -1,6 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 
 export const Builds = new Mongo.Collection('builds');
+export const Locations = new Mongo.Collection('locations');
 
 function addBuild(id, text) {
   console.log(id);
@@ -10,7 +11,7 @@ function addBuild(id, text) {
     desc: text,
     revision: id.substr(id.length - 40),
     owner: id.substr(0, id.length - 41),
-    location: 'Necko:Try-' + id.split('.').join('_'),
+    location: 'Try-' + id.split('.').join('_'),
     created_at: Math.floor(Date.now() / 1000)
   };
 

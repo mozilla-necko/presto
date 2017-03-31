@@ -4,7 +4,7 @@ import './sidebar.html';
 
 Template.sidebar.helpers({
   labels() {
-    return Meteor.settings.public.labels;
+    return listBuildLabels();
   }
 });
 

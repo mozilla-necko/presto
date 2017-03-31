@@ -9,7 +9,7 @@ let gEnv = {
 
 Template.main.helpers({
   labels() {
-    return Meteor.settings.public.labels;
+    return listBuildLabels();
   },
 
   panes() {
@@ -109,7 +109,7 @@ function clearTables() {
 //* UI Operations *
 //********************
 function getNameByLabel(label) {
-  let labels = Meteor.settings.public.labels;
+  let labels = listBuildLabels();
   for (let obj of labels) {
     if (obj.id == label) {
       return obj.text;
