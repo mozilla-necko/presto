@@ -92,31 +92,20 @@ Template.navbar.helpers({
 });
 
 Template.navbar.onRendered(function() {
-  $('#domains li a').click(function(e) {
-    $('#domains li').removeClass('active');
+  $('.scrollable-menu li a').click(function(e) {
+    let parent = $(this).parent();
+    parent.parent().children().removeClass('active');
 
-    var $parent = $(this).parent();
-    if (!$parent.hasClass('active')) {
-      $parent.addClass('active');
+    if (!parent.hasClass('active')) {
+      parent.addClass('active');
     }
     e.preventDefault();
   });
 
   $('#domains li a:first').click();
+  $('#fields li a:first').click();
 
   $('#addBuildModal').on('shown.bs.modal', function () {
     $('#build_email').focus()
   })
-
-  $('#fields li a').click(function(e) {
-    $('#fields li').removeClass('active');
-
-    var $parent = $(this).parent();
-    if (!$parent.hasClass('active')) {
-      $parent.addClass('active');
-    }
-    e.preventDefault();
-  });
-
-  $('#fields li a:first').click();
 });
