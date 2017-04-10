@@ -10,7 +10,7 @@ function addBuild(id, text) {
     desc: text,
     revision: id.substr(id.length - 40),
     owner: id.substr(0, id.length - 41),
-    location: 'Necko:Try-' + id.replace('.', '_'),
+    location: 'Necko:Try-' + id.split('.').join('_'),
     created_at: Math.floor(Date.now() / 1000)
   };
 
