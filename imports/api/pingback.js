@@ -19,22 +19,17 @@ function parseResult(result) {
   if (result.successfulFVRuns == 0 &&
     (result.fvonly || result.successfulRVRuns == 0)) {
     console.log(result.id + ' has skipped (no successful run)');
-    return;
+  } else {
+    console.log(result.id);
   }
-  console.log(result.id);
-
-  let browser_name = result.runs[1].firstView.browser_name;
-  let browser_version = result.runs[1].firstView.browser_version;
 
   Tasks.upsert({
-    id: result.id,
-    url: result.url
+    url: result.url,
+    label: result.label
   }, {
     id: result.id,
     url: result.url,
     label: result.label,
-    browser_name: browser_name,
-    browser_version: browser_version,
     created_at: new Date()
   });
 }
@@ -50,7 +45,9 @@ Router.route('/api/addDomain', {
     let id = this.params.query.id;
 
     task = Tasks.findOne({ id: id});
-    if (!task) {
+    if (task) {
+      console.log(id + ' exists');
+    } else {
       collectResult(id);
     }
     this.response.end(id);
