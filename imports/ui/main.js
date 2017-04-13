@@ -87,7 +87,17 @@ function appendRow(body, values) {
   body.append(tr);
 }
 
+let gStatistics;
+
 function clearTables() {
+  gStatistics = {
+    "names": {},
+    "avg_1st": {},
+    "avg_2nd": {},
+    "med_1st": {},
+    "med_2nd": {}
+  };
+
   setHeader($('#avg_1st_head'), []);
   setHeader($('#avg_2nd_head'), []);
   setHeader($('#med_1st_head'), []);
@@ -96,6 +106,11 @@ function clearTables() {
   $('#avg_2nd_body').empty();
   $('#med_1st_body').empty();
   $('#med_2nd_body').empty();
+
+  $('#avg_1st_plot').addClass('hidden');
+  $('#avg_2nd_plot').addClass('hidden');
+  $('#med_1st_plot').addClass('hidden');
+  $('#med_2nd_plot').addClass('hidden');
 }
 
 //********************
@@ -187,6 +202,12 @@ function refreshData() {
     secondViewMedianHeader.push(labelNames[i]);
 
     if (i > 0) {
+      gStatistics.names[i] = labelNames[i];
+      gStatistics.avg_1st[i] = [];
+      gStatistics.avg_2nd[i] = [];
+      gStatistics.med_1st[i] = [];
+      gStatistics.med_2nd[i] = [];
+
       firstViewAverageHeader.push('Diff');
       secondViewAverageHeader.push('Diff');
       firstViewMedianHeader.push('Diff');
@@ -198,6 +219,11 @@ function refreshData() {
   setHeader($('#avg_2nd_head'), secondViewAverageHeader);
   setHeader($('#med_1st_head'), firstViewMedianHeader);
   setHeader($('#med_2nd_head'), secondViewMedianHeader);
+
+  let counter = 0;
+  function check() {
+    if (++counter == urls.length) { onDataDisplayed(labelNames.length); }
+  }
 
   for (let i = 0; i < urls.length; ++i) {
     let url = urls[i];
@@ -217,8 +243,10 @@ function refreshData() {
 
     Promise.all(promises).then(results => {
       displayData(i, url, results);
+      check();
     }, reason => {
-      console.log('error: ' + reason);
+      console.log('warning: ' + reason);
+      check();
     });
   }
 }
@@ -284,19 +312,31 @@ function displayData(index, url, results) {
     secondViewMedianResults.push(createDisplayValue(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length));
 
     if (i > 0) {
-      let firstViewAverageDiff = (values[0].firstViewAverage - values[i].firstViewAverage).toFixed(2);
-      let repeatViewAverageDiff = (values[0].repeatViewAverage - values[i].repeatViewAverage).toFixed(2);
-      let firstViewMedianDiff = (values[0].firstViewMedian - values[i].firstViewMedian).toFixed(2);
-      let repeatViewMedianDiff = (values[0].repeatViewMedian - values[i].repeatViewMedian).toFixed(2);
+      let firstViewAverageDiff = (values[0].firstViewAverage - values[i].firstViewAverage);
+      let repeatViewAverageDiff = (values[0].repeatViewAverage - values[i].repeatViewAverage);
+      let firstViewMedianDiff = (values[0].firstViewMedian - values[i].firstViewMedian);
+      let repeatViewMedianDiff = (values[0].repeatViewMedian - values[i].repeatViewMedian);
+
+      let percentages = [
+        Math.round(firstViewAverageDiff * 100 / values[0].firstViewAverage),
+        Math.round(repeatViewAverageDiff * 100 / values[0].repeatViewAverage),
+        Math.round(firstViewMedianDiff * 100 / values[0].firstViewMedian),
+        Math.round(repeatViewMedianDiff * 100 / values[0].repeatViewMedian)
+      ];
+
+      gStatistics.avg_1st[i].push(percentages[0]);
+      gStatistics.avg_2nd[i].push(percentages[1]);
+      gStatistics.med_1st[i].push(percentages[2]);
+      gStatistics.med_2nd[i].push(percentages[3]);
 
       firstViewAverageResults.push(createCompareSymbol(firstViewAverageDiff)
-        .append(createCompareValue(Math.round(firstViewAverageDiff * 100 / values[0].firstViewAverage))));
+        .append(createCompareValue(percentages[0])));
       secondViewAverageResults.push(createCompareSymbol(repeatViewAverageDiff)
-        .append(createCompareValue(Math.round(repeatViewAverageDiff * 100 / values[0].repeatViewAverage))));
+        .append(createCompareValue(percentages[1])));
       firstViewMedianResults.push(createCompareSymbol(firstViewMedianDiff)
-        .append(createCompareValue(Math.round(firstViewMedianDiff * 100 / values[0].firstViewMedian))));
+        .append(createCompareValue(percentages[2])));
       secondViewMedianResults.push(createCompareSymbol(repeatViewMedianDiff)
-        .append(createCompareValue(Math.round(repeatViewMedianDiff * 100 / values[0].repeatViewMedian))));
+        .append(createCompareValue(percentages[3])));
     }
   }
 
@@ -319,6 +359,45 @@ function displayData(index, url, results) {
     let td = $('#med_2nd_body > tr:nth-child(' + (index + 1) + ') > td:nth-child(' + (i + 3) + ')');
     td.html(secondViewMedianResults[i]);
   }
+}
+
+function makeChartData(data) {
+  return {
+    x: [1, 2, 3, 4, 5],
+    y: [1, 2, 4, 8, 16]
+  };
+}
+
+function onDataDisplayed(numColumns) {
+  console.log('onDataDisplayed: %d', numColumns);
+
+  let avg_1st_traces = [];
+  let avg_2nd_traces = [];
+  let med_1st_traces = [];
+  let med_2nd_traces = [];
+  for (let i = 1; i < numColumns; ++i) {
+    avg_1st_traces.push({ x: gStatistics.avg_1st[i], type: 'histogram', name: gStatistics.names[i] });
+    avg_2nd_traces.push({ x: gStatistics.avg_2nd[i], type: 'histogram', name: gStatistics.names[i] });
+    med_1st_traces.push({ x: gStatistics.med_1st[i], type: 'histogram', name: gStatistics.names[i] });
+    med_2nd_traces.push({ x: gStatistics.med_2nd[i], type: 'histogram', name: gStatistics.names[i] });
+  }
+
+  const layout = {
+    title: 'Histogram of Difference (%)'
+  };
+  if (numColumns > 1) {
+    $('#avg_1st_plot').removeClass('hidden');
+    $('#avg_2nd_plot').removeClass('hidden');
+    $('#med_1st_plot').removeClass('hidden');
+    $('#med_2nd_plot').removeClass('hidden');
+
+    Plotly.newPlot('avg_1st_plot', avg_1st_traces, layout);
+    Plotly.newPlot('avg_2nd_plot', avg_2nd_traces, layout);
+    Plotly.newPlot('med_1st_plot', med_1st_traces, layout);
+    Plotly.newPlot('med_2nd_plot', med_2nd_traces, layout);
+  }
+
+  console.log(gStatistics);
 }
 
 displayDomain = function(url) {
@@ -355,7 +434,7 @@ compareLabel = function() {
   let label = $('#compare').val();
   if (gEnv.compare == label) { return; }
 
-  console.log('compareLabel: ' + label);
+  // console.log('compareLabel: ' + label);
   gEnv.compare = label;
   refreshData();
 }
