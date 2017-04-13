@@ -56,14 +56,16 @@ getResult = function(testId) {
       resolve(resultCache[testId]);
       return;
     }
+    // console.log('cache miss for ' + testId);
 
     let endpoint = Meteor.settings.public.endpoint;
     let url = endpoint + '/result/' + testId + '/page_data.csv';
     d3.csv(url, (rows) => {
-      resolve({
+      resultCache[testId] = {
         id: testId,
         data: rows
-      });
+      };
+      resolve(resultCache[testId]);
     });
   });
 }
