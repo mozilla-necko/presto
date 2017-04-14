@@ -98,19 +98,11 @@ function clearTables() {
     "med_2nd": {}
   };
 
-  setHeader($('#avg_1st_head'), []);
-  setHeader($('#avg_2nd_head'), []);
-  setHeader($('#med_1st_head'), []);
-  setHeader($('#med_2nd_head'), []);
-  $('#avg_1st_body').empty();
-  $('#avg_2nd_body').empty();
-  $('#med_1st_body').empty();
-  $('#med_2nd_body').empty();
-
-  $('#avg_1st_plot').addClass('hidden');
-  $('#avg_2nd_plot').addClass('hidden');
-  $('#med_1st_plot').addClass('hidden');
-  $('#med_2nd_plot').addClass('hidden');
+  for (let name of ['avg_1st','avg_2nd','med_1st','med_2nd']) {
+    setHeader($('#' + name + '_head'), []);
+    $('#' + name + '_body').empty();
+    $('#' + name + '_plot').addClass('hidden');
+  }
 }
 
 //********************
@@ -203,10 +195,9 @@ function refreshData() {
 
     if (i > 0) {
       gStatistics.names[i] = labelNames[i];
-      gStatistics.avg_1st[i] = [];
-      gStatistics.avg_2nd[i] = [];
-      gStatistics.med_1st[i] = [];
-      gStatistics.med_2nd[i] = [];
+      for (let name of ['avg_1st','avg_2nd','med_1st','med_2nd']) {
+        gStatistics[name][i] = [];
+      }
 
       firstViewAverageHeader.push('Diff');
       secondViewAverageHeader.push('Diff');
@@ -236,10 +227,9 @@ function refreshData() {
     for (let j = 0; j < dataCount; ++j) {
       defaultRowValues.push('N/A');
     }
-    appendRow($('#avg_1st_body'), defaultRowValues);
-    appendRow($('#avg_2nd_body'), defaultRowValues);
-    appendRow($('#med_1st_body'), defaultRowValues);
-    appendRow($('#med_2nd_body'), defaultRowValues);
+    for (let id of ['avg_1st_body','avg_2nd_body','med_1st_body','med_2nd_body']) {
+      appendRow($('#' + id), defaultRowValues);
+    }
 
     Promise.all(promises).then(results => {
       displayData(i, url, results);
@@ -317,26 +307,25 @@ function displayData(index, url, results) {
       let firstViewMedianDiff = (values[0].firstViewMedian - values[i].firstViewMedian);
       let repeatViewMedianDiff = (values[0].repeatViewMedian - values[i].repeatViewMedian);
 
-      let percentages = [
-        Math.round(firstViewAverageDiff * 100 / values[0].firstViewAverage),
-        Math.round(repeatViewAverageDiff * 100 / values[0].repeatViewAverage),
-        Math.round(firstViewMedianDiff * 100 / values[0].firstViewMedian),
-        Math.round(repeatViewMedianDiff * 100 / values[0].repeatViewMedian)
-      ];
+      let percentages = {
+        "avg_1st" : Math.round(firstViewAverageDiff * 100 / values[0].firstViewAverage),
+        "avg_2nd" : Math.round(repeatViewAverageDiff * 100 / values[0].repeatViewAverage),
+        "med_1st" : Math.round(firstViewMedianDiff * 100 / values[0].firstViewMedian),
+        "med_2nd" : Math.round(repeatViewMedianDiff * 100 / values[0].repeatViewMedian)
+      };
 
-      gStatistics.avg_1st[i].push(percentages[0]);
-      gStatistics.avg_2nd[i].push(percentages[1]);
-      gStatistics.med_1st[i].push(percentages[2]);
-      gStatistics.med_2nd[i].push(percentages[3]);
+      for (let name of ['avg_1st','avg_2nd','med_1st','med_2nd']) {
+        gStatistics[name][i].push(percentages[name]);
+      }
 
       firstViewAverageResults.push(createCompareSymbol(firstViewAverageDiff)
-        .append(createCompareValue(percentages[0])));
+        .append(createCompareValue(percentages.avg_1st)));
       secondViewAverageResults.push(createCompareSymbol(repeatViewAverageDiff)
-        .append(createCompareValue(percentages[1])));
+        .append(createCompareValue(percentages.avg_2nd)));
       firstViewMedianResults.push(createCompareSymbol(firstViewMedianDiff)
-        .append(createCompareValue(percentages[2])));
+        .append(createCompareValue(percentages.med_1st)));
       secondViewMedianResults.push(createCompareSymbol(repeatViewMedianDiff)
-        .append(createCompareValue(percentages[3])));
+        .append(createCompareValue(percentages.med_2nd)));
     }
   }
 
@@ -371,30 +360,24 @@ function makeChartData(data) {
 function onDataDisplayed(numColumns) {
   console.log('onDataDisplayed: %d', numColumns);
 
-  let avg_1st_traces = [];
-  let avg_2nd_traces = [];
-  let med_1st_traces = [];
-  let med_2nd_traces = [];
+  let traces = {};
+  for (let id of ['avg_1st_plot','avg_2nd_plot','med_1st_plot','med_2nd_plot']) {
+    traces[id] = [];
+  }
   for (let i = 1; i < numColumns; ++i) {
-    avg_1st_traces.push({ x: gStatistics.avg_1st[i], type: 'histogram', name: gStatistics.names[i] });
-    avg_2nd_traces.push({ x: gStatistics.avg_2nd[i], type: 'histogram', name: gStatistics.names[i] });
-    med_1st_traces.push({ x: gStatistics.med_1st[i], type: 'histogram', name: gStatistics.names[i] });
-    med_2nd_traces.push({ x: gStatistics.med_2nd[i], type: 'histogram', name: gStatistics.names[i] });
+    for (let name of ['avg_1st','avg_2nd','med_1st','med_2nd']) {
+      traces[name + '_plot'].push({ x: gStatistics[name][i], type: 'histogram', name: gStatistics.names[i] });
+    }
   }
 
   const layout = {
     title: 'Histogram of Difference (%)'
   };
   if (numColumns > 1) {
-    $('#avg_1st_plot').removeClass('hidden');
-    $('#avg_2nd_plot').removeClass('hidden');
-    $('#med_1st_plot').removeClass('hidden');
-    $('#med_2nd_plot').removeClass('hidden');
-
-    Plotly.newPlot('avg_1st_plot', avg_1st_traces, layout);
-    Plotly.newPlot('avg_2nd_plot', avg_2nd_traces, layout);
-    Plotly.newPlot('med_1st_plot', med_1st_traces, layout);
-    Plotly.newPlot('med_2nd_plot', med_2nd_traces, layout);
+    for (let id of ['avg_1st_plot','avg_2nd_plot','med_1st_plot','med_2nd_plot']) {
+      $('#' + id).removeClass('hidden');
+      Plotly.newPlot(id, traces[id], layout);
+    }
   }
 
   console.log(gStatistics);
