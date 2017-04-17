@@ -14,10 +14,10 @@ Template.main.helpers({
 
   panes() {
     return [
-      { pane: "avg_1st", text: "Average" },
-      { pane: "avg_2nd", text: "Average (Cached)" },
       { pane: "med_1st", text: "Median" },
       { pane: "med_2nd", text: "Median (Cached)" },
+      { pane: "avg_1st", text: "Average" },
+      { pane: "avg_2nd", text: "Average (Cached)" },
     ];
   }
 });
