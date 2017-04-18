@@ -389,7 +389,7 @@ displayDomain = function(url) {
   // console.log('displayDomain: ' + url);
   gEnv.url = url;
 
-  $('#currentDomain').text(url);
+  $('#currentDomain').text(url || "All");
 
   refreshData();
 }

@@ -92,6 +92,7 @@ Template.navbar.helpers({
 });
 
 Template.navbar.onRendered(function() {
+  // console.log('navbar.onRendered');
   $('.scrollable-menu li a').click(function(e) {
     let parent = $(this).parent();
     parent.parent().children().removeClass('active');
@@ -108,4 +109,19 @@ Template.navbar.onRendered(function() {
   $('#addBuildModal').on('shown.bs.modal', function () {
     $('#build_email').focus()
   })
+});
+
+Template.domainItem.onRendered(function() {
+  // console.log('domainItem.onRendered');
+
+    $('#domains li a').unbind('click');
+    $('#domains li a').click(function(e) {
+    let parent = $(this).parent();
+    parent.parent().children().removeClass('active');
+
+    if (!parent.hasClass('active')) {
+      parent.addClass('active');
+    }
+    e.preventDefault();
+  });
 });

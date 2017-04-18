@@ -17,7 +17,7 @@
           <li role="separator" class="divider"></li>
           <li class="dropdown-header">Available Domains ({{numDomains}})</li>
           {{#each domains}}
-            <li><a href="#" onclick="displayDomain('{{url}}');">{{url}}</a></li>
+            {{>domainItem}}
           {{/each}}
         </ul>
       </li>
@@ -43,6 +43,6 @@
   </div>
 </template>
 
-<template name="domain">
+<template name="domainItem">
   <li><a href="#" onclick="displayDomain('{{url}}');">{{url}}</a></li>
 </template>
