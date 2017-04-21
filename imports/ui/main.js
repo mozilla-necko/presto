@@ -243,7 +243,7 @@ function refreshData() {
 
 function createDisplayValue(url, value, count) {
   let link = createLink(url, value, count + ' valid samples');
-  if (count != Meteor.settings.public.runs) {
+  if (count < Meteor.settings.public.runs) {
     link.append($('<span class="glyphicon glyphicon-info-sign"/>'));
   }
   return link;
