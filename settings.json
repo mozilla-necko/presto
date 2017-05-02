@@ -4,8 +4,9 @@
     "pingback": "",
     "priority": 5,
     "runs": 30,
+    "browser_width": 1600,
+    "browser_height": 900,
     "labels": [
-      // { "id": "<label_id>", "text": "<display text>"}
     ],
     "build_archive": "https://archive.mozilla.org/pub/firefox/try-builds/",
     "top_sites": [

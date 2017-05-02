@@ -66,6 +66,8 @@ function addTask(task) {
         }
 
         submitOne(endpoint, {
+          browser_width: task.browser_width,
+          browser_height: task.browser_height,
           f: 'json',
           location: [location.name, build.location].join(':'),
           priority: task.priority,
@@ -113,6 +115,8 @@ Router.route('/api/task/add', {
         user && user.length) {
 
       addTask({
+        browser_width: Meteor.settings.public.browser_width,
+        browser_height: Meteor.settings.public.browser_height,
         created_at: new Date(),
         from: this.request.connection.remoteAddress,
         labels: labels,
