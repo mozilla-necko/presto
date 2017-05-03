@@ -47,7 +47,7 @@ function fetchData(label, url) {
 
   let task = Tasks.findOne(param, { sort: {created_at: -1}});
   if (task) {
-    return getResult(task.id);
+    return getResult(task);
   } else {
     return new Promise((resolve, reject) => {
       reject(JSON.stringify(param) + ' not found');
@@ -241,9 +241,10 @@ function refreshData() {
   }
 }
 
-function createDisplayValue(url, value, count) {
+function createDisplayValue(url, value, count, runs) {
   let link = createLink(url, value, count + ' valid samples');
-  if (count < Meteor.settings.public.runs) {
+  let expectRuns = runs || Meteor.settings.public.runs; // runs might be undefined
+  if (expectRuns != count) {
     link.append($('<span class="glyphicon glyphicon-info-sign"/>'));
   }
   return link;
@@ -259,7 +260,7 @@ function displayData(index, url, results) {
   // console.log(results);
 
   let values = results.map(result => {
-    let { data, id } = result;
+    let { data, id, runs } = result;
     // console.log(result);
     let resultURL = Meteor.settings.public.endpoint + '/results.php?test=' + id;
 
@@ -281,6 +282,7 @@ function displayData(index, url, results) {
     return {
       id: id,
       url: resultURL,
+      runs: runs,
       firstViewValues: firstViewValues,
       firstViewAverage: avg(firstViewValues).toFixed(2),
       firstViewMedian: med(firstViewValues).toFixed(1),
@@ -296,10 +298,10 @@ function displayData(index, url, results) {
   let secondViewMedianResults = [];
 
   for (let i = 0; i < values.length; ++i) {
-    firstViewAverageResults.push(createDisplayValue(values[i].url, values[i].firstViewAverage, values[i].firstViewValues.length));
-    secondViewAverageResults.push(createDisplayValue(values[i].url, values[i].repeatViewAverage, values[i].repeatViewValues.length));
-    firstViewMedianResults.push(createDisplayValue(values[i].url, values[i].firstViewMedian, values[i].firstViewValues.length));
-    secondViewMedianResults.push(createDisplayValue(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length));
+    firstViewAverageResults.push(createDisplayValue(values[i].url, values[i].firstViewAverage, values[i].firstViewValues.length, values[i].runs));
+    secondViewAverageResults.push(createDisplayValue(values[i].url, values[i].repeatViewAverage, values[i].repeatViewValues.length, values[i].runs));
+    firstViewMedianResults.push(createDisplayValue(values[i].url, values[i].firstViewMedian, values[i].firstViewValues.length, values[i].runs));
+    secondViewMedianResults.push(createDisplayValue(values[i].url, values[i].repeatViewMedian, values[i].repeatViewValues.length, values[i].runs));
 
     if (i > 0) {
       let firstViewAverageDiff = (values[0].firstViewAverage - values[i].firstViewAverage);

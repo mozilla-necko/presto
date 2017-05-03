@@ -99,7 +99,8 @@ listLocations = function() {
 
 let resultCache = {};
 
-getResult = function(testId) {
+getResult = function(task) {
+  let testId = task.id;
   return new Promise(function(resolve, reject) {
     if (resultCache.hasOwnProperty(testId)) {
       resolve(resultCache[testId]);
@@ -112,7 +113,8 @@ getResult = function(testId) {
     d3.csv(url, (rows) => {
       resultCache[testId] = {
         id: testId,
-        data: rows
+        data: rows,
+        runs: task.runs
       };
       resolve(resultCache[testId]);
     });

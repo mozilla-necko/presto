@@ -30,6 +30,7 @@ function parseResult(result) {
     id: result.id,
     url: result.url,
     label: result.label,
+    runs: Object.keys(result.runs).length,
     created_at: new Date()
   });
 }
