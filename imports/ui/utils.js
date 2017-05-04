@@ -44,7 +44,7 @@ makeXHRRequest = function(url) {
 }
 
 listDomains = function() {
-  let urls = Tasks.find({}, {
+  let urls = Tasks.find({ $or: [{ hidden: { $exists : false } }, {hidden: { $eq : false }}] }, {
     sort: { url: 1 }, fields: { url: true }
   }).map((obj) => {
     return obj.url;
@@ -75,7 +75,10 @@ listBuildLabels = function(param) {
 
   if (!param || !param.dontFilter) {
     return labels.filter(obj => {
-      return Tasks.findOne({ label: obj.id });
+      return Tasks.findOne({
+        label: obj.id,
+        $or: [{ hidden: { $exists : false } }, {hidden: { $eq : false }}]
+      });
     });
   }
 
