@@ -100,26 +100,18 @@ listLocations = function() {
   return locations;
 }
 
-let resultCache = {};
-
 getResult = function(task) {
   let testId = task.id;
   return new Promise(function(resolve, reject) {
-    if (resultCache.hasOwnProperty(testId)) {
-      resolve(resultCache[testId]);
-      return;
-    }
-    // console.log('cache miss for ' + testId);
 
     let endpoint = Meteor.settings.public.endpoint;
     let url = endpoint + '/result/' + testId + '/page_data.csv';
     d3.csv(url, (rows) => {
-      resultCache[testId] = {
+      resolve({
         id: testId,
         data: rows,
         runs: task.runs
-      };
-      resolve(resultCache[testId]);
+      });
     });
   });
 }
