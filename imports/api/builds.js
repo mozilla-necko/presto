@@ -70,7 +70,14 @@ Router.route('/api/builds', {
       // 'Access-Control-Allow-Origin': '*'
     });
 
-    let builds = Builds.find({}, { sort: { created_at: 1 } }).fetch();
+    let timestamp = 0;
+    if (this.params.query.timestamp) {
+      timestamp = parseInt(this.params.query.timestamp, 10);
+    }
+
+    check(timestamp, Number);
+    let builds = Builds.find(timestamp ? { created_at : { $gt : timestamp} } : {},
+      { sort: { created_at: 1 } }).fetch();
     let responses = [];
 
     for (let build of builds) {
