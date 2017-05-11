@@ -43,10 +43,18 @@ makeXHRRequest = function(url) {
   });
 }
 
-listDomains = function() {
-  let urls = Tasks.find({ $or: [{ hidden: { $exists : false } }, {hidden: { $eq : false }}] }, {
+listDomains = function(labels) {
+  const visible_selector = {
+    $or: [{ hidden: { $exists : false } }, {hidden: { $eq : false }}]
+  };
+  const label_selector = {
+    $and: [{ label: { $in: labels } }, visible_selector]
+  };
+
+  let selector = labels ? label_selector : visible_selector;
+  let urls = Tasks.find(selector, {
     sort: { url: 1 }, fields: { url: true }
-  }).map((obj) => {
+  }).map(obj => {
     return obj.url;
   });
 

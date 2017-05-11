@@ -177,7 +177,7 @@ function refreshData() {
 
   clearTables();
 
-  let urls = gEnv.url ? [gEnv.url] : listDomains();
+  let urls = gEnv.url ? [gEnv.url] : listDomains(labels);
   // console.log('URLs: ' + JSON.stringify(urls));
 
   let labelNames = labels.map(getNameByLabel);
