@@ -66,7 +66,9 @@ hasLabel = function(label) {
 }
 
 listBuildLabels = function(param) {
-  let labels = Builds.find({}, {
+  let labels = Builds.find({
+    $or: [{ hidden: { $exists : false } }, {hidden: { $eq : false }}]
+  }, {
     sort: { desc: 1 }, fields: { desc: true, revision: true }
   }).map(obj => {
     return {
