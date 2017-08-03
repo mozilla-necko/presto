@@ -74,10 +74,23 @@ Router.route('/api/builds', {
     if (this.params.query.timestamp) {
       timestamp = parseInt(this.params.query.timestamp, 10);
     }
-
     check(timestamp, Number);
-    let builds = Builds.find(timestamp ? { created_at : { $gt : timestamp} } : {},
-      { sort: { created_at: 1 } }).fetch();
+
+    let reveal = 0;
+    if (this.params.query.reveal) {
+      reveal = parseInt(this.params.query.reveal, 10);
+    }
+    check(reveal, Number);
+
+    let query = {};
+
+    if (!reveal) {
+      query['$or'] = [{ hidden: { $exists : false } }, {hidden: { $eq : false }}];
+    };
+    if (timestamp) {
+      query.created_at = { $gt : timestamp };
+    }
+    let builds = Builds.find(query, { sort: { created_at: 1 } }).fetch();
     let responses = [];
 
     for (let build of builds) {

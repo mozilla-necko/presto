@@ -13,7 +13,17 @@ Router.route('/api/tasks', {
       // 'Access-Control-Allow-Origin': '*'
     });
 
-    let tasks = Tasks.find({}, { sort: { created_at: 1 } }).fetch();
+    let reveal = 0;
+    if (this.params.query.reveal) {
+      reveal = parseInt(this.params.query.reveal, 10);
+    }
+    check(reveal, Number);
+
+    let query = {};
+    if (!reveal) {
+      query['$or'] = [{ hidden: { $exists : false } }, {hidden: { $eq : false }}];
+    };
+    let tasks = Tasks.find(query, { sort: { created_at: 1 } }).fetch();
     let responses = [];
 
     for (let task of tasks) {
