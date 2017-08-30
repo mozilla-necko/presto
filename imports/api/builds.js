@@ -94,13 +94,17 @@ Router.route('/api/builds', {
     let responses = [];
 
     for (let build of builds) {
-      responses.push({
+      let item = {
         id: build.id,
         revision: build.revision,
         owner: build.owner,
         location: build.location,
         created_at: build.created_at
-      });
+      };
+      if (build.url) {
+        item.url = build.url;
+      }
+      responses.push(item);
     }
 
     this.response.end(JSON.stringify(responses));
